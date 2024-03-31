@@ -1,30 +1,50 @@
 ﻿#define DEBUG_TRACE_EXECUTION
 
-Chunk chunk = new();
-
-byte constant = chunk.AddConstant(1.2);
-chunk.Write((byte)OpCode.CONSTANT, 123);
-chunk.Write(constant, 123);
-
-constant = chunk.AddConstant(3.4);
-chunk.Write((byte)OpCode.CONSTANT, 123);
-chunk.Write(constant, 123);
-
-chunk.Write((byte)OpCode.ADD, 123);
-
-constant = chunk.AddConstant(5.6);
-chunk.Write((byte)OpCode.CONSTANT, 123);
-chunk.Write(constant, 123);
-
-chunk.Write((byte)OpCode.DIVIDE, 123);
-
-chunk.Write((byte)OpCode.NEGATE, 123);
-chunk.Write((byte)OpCode.RETURN, 123);
-
-chunk.Disassemble("test chunk");
-
-Console.WriteLine("");
-
 VM vm = new VM();
 
-vm.interpret(chunk);
+if (args.Length == 0)
+{
+    RunREPL();
+}
+else if (args.Length == 1)
+{
+    RunFile(args[1]);
+}
+else
+{
+    Console.WriteLine("Usage: cslox [path]");
+    Environment.Exit(64);
+}
+
+void RunREPL()
+{
+    while (true)
+    {
+        Console.Write("> ");
+        string? line = Console.ReadLine();
+        if (line != null)
+        {
+            vm.interpret(line);
+        }
+    }
+}
+
+void RunFile(string filePath)
+{
+    string source = "";
+    try
+    {
+        source = File.ReadAllText(filePath);
+    }
+    catch
+    {
+        Console.WriteLine($"Could not open file \"{filePath}\".");
+        Environment.Exit(74);
+    }
+
+    switch (vm.interpret(source))
+    {
+        case InterpretResult.COMPILE_ERROR: Environment.Exit(65); break;
+        case InterpretResult.RUNTIME_ERROR: Environment.Exit(70); break;
+    }
+}

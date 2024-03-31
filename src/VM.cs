@@ -7,16 +7,19 @@ enum InterpretResult
 
 class VM
 {
+    Compiler compiler = new Compiler();
     Chunk chunk;
 
     Stack<Value> stack = new Stack<Value>();
-    int ip;
+    int ip = 0;
 
-    public InterpretResult interpret(Chunk chunk)
+    public InterpretResult interpret(string source)
     {
-        this.chunk = chunk;
-        ip = 0;
-        return Run();
+        compiler.Compile(source);
+
+        return InterpretResult.OK;
+
+        // return Run();
     }
 
     public void Push(Value value)
@@ -31,7 +34,7 @@ class VM
 
     private InterpretResult Run()
     {
-        for (; ; )
+        while (true)
         {
 #if DEBUG_TRACE_EXECUTION
             Console.Write("          ");
