@@ -1,6 +1,11 @@
 public enum OpCode : byte
 {
     CONSTANT,
+    ADD,
+    SUBTRACT,
+    MULTIPLY,
+    DIVIDE,
+    NEGATE,
     RETURN
 }
 
@@ -34,7 +39,7 @@ struct Chunk
         }
     }
 
-    private int DisassembleInstruction(int offset)
+    public int DisassembleInstruction(int offset)
     {
         Console.Write($"{offset:D4} ");
 
@@ -51,6 +56,11 @@ struct Chunk
         switch ((OpCode)instruction)
         {
             case OpCode.CONSTANT: return ConstantInstruction("OP_CONSTANT", offset);
+            case OpCode.ADD: return SimpleInstruction("OP_ADD", offset);
+            case OpCode.SUBTRACT: return SimpleInstruction("OP_SUBTRACT", offset);
+            case OpCode.MULTIPLY: return SimpleInstruction("OP_MULTIPLY", offset);
+            case OpCode.DIVIDE: return SimpleInstruction("OP_DIVIDE", offset);
+            case OpCode.NEGATE: return SimpleInstruction("OP_NEGATE", offset);
             case OpCode.RETURN: return SimpleInstruction("OP_RETURN", offset);
         }
 
