@@ -23,9 +23,9 @@ struct Chunk
         lines.Add(line);
     }
 
-    public byte AddConstant(double value)
+    public byte AddConstant(Value value)
     {
-        constants.Add(new(value));
+        constants.Add(value);
         return (byte)(constants.Count - 1);
     }
 

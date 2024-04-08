@@ -7,7 +7,6 @@ enum InterpretResult
 
 class VM
 {
-    Compiler compiler = new Compiler();
     Chunk chunk;
 
     Stack<Value> stack = new Stack<Value>();
@@ -15,11 +14,16 @@ class VM
 
     public InterpretResult interpret(string source)
     {
-        compiler.Compile(source);
+        Chunk chunk = new Chunk();
+        Compiler compiler = new Compiler(new Scanner(source), ref chunk);
+        if (!compiler.Compile())
+        {
+            return InterpretResult.COMPILE_ERROR;
+        }
 
-        return InterpretResult.OK;
-
-        // return Run();
+        this.chunk = chunk;
+        this.ip = 0;
+        return Run();
     }
 
     public void Push(Value value)
