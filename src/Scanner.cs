@@ -166,8 +166,8 @@ class Scanner(string source)
     private TokenType CheckKeyword(int offset, string partial, TokenType type)
     {
         int s = start + offset;
-        int e = s + partial.Length - 1;
-        if (e < source.Length && source[s..e] == partial) return type;
+        int e = s + partial.Length;
+        if (e <= source.Length && source[s..e] == partial) return type;
         return TokenType.IDENTIFIER;
     }
 
