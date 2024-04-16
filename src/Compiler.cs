@@ -50,31 +50,31 @@ class Compiler
         rules[(int)TokenType.SEMICOLON] = new ParseRule(null, null, Precedence.NONE);
         rules[(int)TokenType.SLASH] = new ParseRule(null, Binary, Precedence.FACTOR);
         rules[(int)TokenType.STAR] = new ParseRule(null, Binary, Precedence.FACTOR);
-        rules[(int)TokenType.BANG] = new ParseRule(null, null, Precedence.NONE);
-        rules[(int)TokenType.BANG_EQUAL] = new ParseRule(null, null, Precedence.NONE);
+        rules[(int)TokenType.BANG] = new ParseRule(Unary, null, Precedence.NONE);
+        rules[(int)TokenType.BANG_EQUAL] = new ParseRule(null, Binary, Precedence.EQUALITY);
         rules[(int)TokenType.EQUAL] = new ParseRule(null, null, Precedence.NONE);
-        rules[(int)TokenType.EQUAL_EQUAL] = new ParseRule(null, null, Precedence.NONE);
-        rules[(int)TokenType.GREATER] = new ParseRule(null, null, Precedence.NONE);
-        rules[(int)TokenType.GREATER_EQUAL] = new ParseRule(null, null, Precedence.NONE);
-        rules[(int)TokenType.LESS] = new ParseRule(null, null, Precedence.NONE);
-        rules[(int)TokenType.LESS_EQUAL] = new ParseRule(null, null, Precedence.NONE);
+        rules[(int)TokenType.EQUAL_EQUAL] = new ParseRule(null, Binary, Precedence.EQUALITY);
+        rules[(int)TokenType.GREATER] = new ParseRule(null, Binary, Precedence.COMPARISON);
+        rules[(int)TokenType.GREATER_EQUAL] = new ParseRule(null, Binary, Precedence.COMPARISON);
+        rules[(int)TokenType.LESS] = new ParseRule(null, Binary, Precedence.COMPARISON);
+        rules[(int)TokenType.LESS_EQUAL] = new ParseRule(null, Binary, Precedence.COMPARISON);
         rules[(int)TokenType.IDENTIFIER] = new ParseRule(null, null, Precedence.NONE);
         rules[(int)TokenType.STRING] = new ParseRule(null, null, Precedence.NONE);
         rules[(int)TokenType.NUMBER] = new ParseRule(Number, null, Precedence.NONE);
         rules[(int)TokenType.AND] = new ParseRule(null, null, Precedence.NONE);
         rules[(int)TokenType.CLASS] = new ParseRule(null, null, Precedence.NONE);
         rules[(int)TokenType.ELSE] = new ParseRule(null, null, Precedence.NONE);
-        rules[(int)TokenType.FALSE] = new ParseRule(null, null, Precedence.NONE);
+        rules[(int)TokenType.FALSE] = new ParseRule(Literal, null, Precedence.NONE);
         rules[(int)TokenType.FOR] = new ParseRule(null, null, Precedence.NONE);
         rules[(int)TokenType.FUN] = new ParseRule(null, null, Precedence.NONE);
         rules[(int)TokenType.IF] = new ParseRule(null, null, Precedence.NONE);
-        rules[(int)TokenType.NIL] = new ParseRule(null, null, Precedence.NONE);
+        rules[(int)TokenType.NIL] = new ParseRule(Literal, null, Precedence.NONE);
         rules[(int)TokenType.OR] = new ParseRule(null, null, Precedence.NONE);
         rules[(int)TokenType.PRINT] = new ParseRule(null, null, Precedence.NONE);
         rules[(int)TokenType.RETURN] = new ParseRule(null, null, Precedence.NONE);
         rules[(int)TokenType.SUPER] = new ParseRule(null, null, Precedence.NONE);
         rules[(int)TokenType.THIS] = new ParseRule(null, null, Precedence.NONE);
-        rules[(int)TokenType.TRUE] = new ParseRule(null, null, Precedence.NONE);
+        rules[(int)TokenType.TRUE] = new ParseRule(Literal, null, Precedence.NONE);
         rules[(int)TokenType.VAR] = new ParseRule(null, null, Precedence.NONE);
         rules[(int)TokenType.WHILE] = new ParseRule(null, null, Precedence.NONE);
         rules[(int)TokenType.ERROR] = new ParseRule(null, null, Precedence.NONE);
@@ -167,11 +167,27 @@ class Compiler
 
         switch (operatorType)
         {
+            case TokenType.BANG_EQUAL: EmitBytes((byte)OpCode.EQUAL, (byte)OpCode.NOT); break;
+            case TokenType.EQUAL_EQUAL: EmitByte((byte)OpCode.EQUAL); break;
+            case TokenType.GREATER: EmitByte((byte)OpCode.GREATER); break;
+            case TokenType.GREATER_EQUAL: EmitBytes((byte)OpCode.LESS, (byte)OpCode.NOT); break;
+            case TokenType.LESS: EmitByte((byte)OpCode.LESS); break;
+            case TokenType.LESS_EQUAL: EmitBytes((byte)OpCode.GREATER, (byte)OpCode.NOT); break;
             case TokenType.PLUS: EmitByte((byte)OpCode.ADD); break;
             case TokenType.MINUS: EmitByte((byte)OpCode.SUBTRACT); break;
             case TokenType.STAR: EmitByte((byte)OpCode.MULTIPLY); break;
             case TokenType.SLASH: EmitByte((byte)OpCode.DIVIDE); break;
             default: return;
+        }
+    }
+
+    private void Literal()
+    {
+        switch (previous.type)
+        {
+            case TokenType.FALSE: EmitByte((byte)OpCode.FALSE); break;
+            case TokenType.NIL: EmitByte((byte)OpCode.NIL); break;
+            case TokenType.TRUE: EmitByte((byte)OpCode.TRUE); break;
         }
     }
 
@@ -185,11 +201,11 @@ class Compiler
     {
         if (double.TryParse(previous.lexeme, null, out double result))
         {
-            EmitConstant(new Value(result));
+            EmitConstant(Value.Number(result));
         }
         else
         {
-            EmitConstant(new Value());
+            EmitConstant(Value.Nil());
         }
     }
 
@@ -203,6 +219,7 @@ class Compiler
         // Emit the operator instruction.
         switch (operatorType)
         {
+            case TokenType.BANG: EmitByte((byte)OpCode.NOT); break;
             case TokenType.MINUS: EmitByte((byte)OpCode.NEGATE); break;
             default: return; // Unreachable.
         }

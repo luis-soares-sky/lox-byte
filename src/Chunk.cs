@@ -1,10 +1,17 @@
 public enum OpCode : byte
 {
     CONSTANT,
+    NIL,
+    TRUE,
+    FALSE,
+    EQUAL,
+    GREATER,
+    LESS,
     ADD,
     SUBTRACT,
     MULTIPLY,
     DIVIDE,
+    NOT,
     NEGATE,
     RETURN
 }
@@ -56,10 +63,17 @@ struct Chunk
         switch ((OpCode)instruction)
         {
             case OpCode.CONSTANT: return ConstantInstruction("OP_CONSTANT", offset);
+            case OpCode.NIL: return SimpleInstruction("OP_NIL", offset);
+            case OpCode.TRUE: return SimpleInstruction("OP_TRUE", offset);
+            case OpCode.FALSE: return SimpleInstruction("OP_FALSE", offset);
+            case OpCode.EQUAL: return SimpleInstruction("OP_EQUAL", offset);
+            case OpCode.GREATER: return SimpleInstruction("OP_GREATER", offset);
+            case OpCode.LESS: return SimpleInstruction("OP_LESS", offset);
             case OpCode.ADD: return SimpleInstruction("OP_ADD", offset);
             case OpCode.SUBTRACT: return SimpleInstruction("OP_SUBTRACT", offset);
             case OpCode.MULTIPLY: return SimpleInstruction("OP_MULTIPLY", offset);
             case OpCode.DIVIDE: return SimpleInstruction("OP_DIVIDE", offset);
+            case OpCode.NOT: return SimpleInstruction("OP_NOT", offset);
             case OpCode.NEGATE: return SimpleInstruction("OP_NEGATE", offset);
             case OpCode.RETURN: return SimpleInstruction("OP_RETURN", offset);
         }
