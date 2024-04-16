@@ -8,4 +8,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(VariableName)'=='VarableValue'">
+    <DefineConstants>DEBUG_TRACE_EXECUTION;DEBUG_PRINT_CODE</DefineConstants>
+  </PropertyGroup>
+
 </Project>

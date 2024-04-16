@@ -199,7 +199,7 @@ class Compiler
 
     private void Number()
     {
-        if (double.TryParse(previous.lexeme, null, out double result))
+        if (double.TryParse(previous.lexeme, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double result))
         {
             EmitConstant(Value.Number(result));
         }

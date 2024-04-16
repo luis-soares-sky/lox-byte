@@ -1,7 +1,4 @@
-﻿#define DEBUG_TRACE_EXECUTION
-#define DEBUG_PRINT_CODE
-
-VM vm = new VM();
+﻿VM vm = new VM();
 
 if (args.Length == 0)
 {

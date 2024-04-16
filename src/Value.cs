@@ -32,7 +32,7 @@ struct Value(ValueType type, double value)
             case ValueType.NIL: return "nil";
             case ValueType.BOOLEAN: return AsBoolean ? "true" : "false";
         }
-        return value.ToString();
+        return value.ToString(System.Globalization.CultureInfo.InvariantCulture);
     }
 
     public override int GetHashCode()
